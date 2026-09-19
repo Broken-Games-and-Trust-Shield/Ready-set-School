@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#18382f" />
+    <title>Ready Set School | Accounts + Reminders</title>
+    <link rel="manifest" href="manifest.json" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">...</div>
+        <nav class="nav-tabs" aria-label="Main navigation">
+          <button class="nav-tab active" data-tab="checklist">My checklist</button>
+          <button class="nav-tab" data-tab="schedule">My schedule</button>
+        </nav>
+        <div class="account-panel">
+          <div class="account-avatar" id="account-avatar">?</div>
+          <div class="account-copy">
+            <strong id="account-name">Set up your profile</strong>
+            <small id="account-status">Name and password</small>
+          </div>
+          <button class="account-button" id="account-action" type="button">Log out</button>
+          <button class="account-settings-button" id="profile-settings" type="button">Profile settings</button>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <section id="checklist" class="tab-panel active-panel">
+          <header class="page-header">...</header>
+          <section class="today-banner">...</section>
+          <div class="section-heading">...</div>
+          <div id="checklist-items" class="checklist-items"></div>
+          <div id="empty-state" class="empty-state hidden">...</div>
+        </section>
+
+        <section id="schedule" class="tab-panel">
+          <header class="page-header schedule-header">...</header>
+          <div class="schedule-stage" id="schedule-stage">
+            <div class="schedule-placeholder" id="schedule-placeholder">...</div>
+            <img id="schedule-image" class="schedule-image hidden" alt="Uploaded school schedule" />
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <dialog id="item-dialog">...</dialog>
+    <dialog id="account-dialog">...</dialog>
+    <dialog id="settings-dialog">...</dialog>
+    <dialog id="notifications-dialog">...</dialog>
+
+    <script type="module" src="app.js?v=20260826-single-session"></script>
+  </body>
+</html>
