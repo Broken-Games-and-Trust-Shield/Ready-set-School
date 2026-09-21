@@ -6,22 +6,26 @@
     <meta name="theme-color" content="#18382f" />
     <title>Ready Set School | Accounts + Reminders</title>
     <link rel="manifest" href="manifest.json" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <div class="app-shell">
       <aside class="sidebar">
-        <div class="brand">...</div>
+        <div class="brand"><span class="brand-mark">✓</span><span>Ready Set<br /><strong>School</strong></span></div>
         <nav class="nav-tabs" aria-label="Main navigation">
-          <button class="nav-tab active" data-tab="checklist">My checklist</button>
-          <button class="nav-tab" data-tab="schedule">My schedule</button>
+          <button class="nav-tab active" data-tab="checklist"><span>▣</span> My checklist</button>
+          <button class="nav-tab" data-tab="schedule"><span>▤</span> My schedule</button>
         </nav>
+        <div class="sidebar-note">
+          <span class="sun">☀</span>
+          <p>Small prep today,<br /><strong>calmer mornings.</strong></p>
+        </div>
         <div class="account-panel">
           <div class="account-avatar" id="account-avatar">?</div>
-          <div class="account-copy">
-            <strong id="account-name">Set up your profile</strong>
-            <small id="account-status">Name and password</small>
-          </div>
+          <div class="account-copy"><strong id="account-name">Set up your profile</strong><small id="account-status">Name and password</small></div>
           <button class="account-button" id="account-action" type="button">Log out</button>
           <button class="account-settings-button" id="profile-settings" type="button">Profile settings</button>
         </div>
@@ -29,28 +33,50 @@
 
       <main class="main-content">
         <section id="checklist" class="tab-panel active-panel">
-          <header class="page-header">...</header>
-          <section class="today-banner">...</section>
-          <div class="section-heading">...</div>
+          <header class="page-header">
+            <div>
+              <p class="eyebrow">Good morning, <span id="greeting-name">Alex</span></p>
+              <h1>Let’s get ready.</h1>
+              <p class="subhead" id="date-label"></p>
+            </div>
+            <div class="header-actions"><button class="install-button hidden" id="install-app" type="button">Install app</button><button class="notification-button" id="open-notifications" type="button" aria-label="Open notifications"><span aria-hidden="true">♢</span><b id="notification-count" class="hidden">0</b></button><div class="streak"><span>✦</span><div><strong id="streak-number">0</strong><small>day streak</small></div></div></div>
+          </header>
+
+          <section class="today-banner">
+            <div class="today-icon">☀</div>
+            <div><p class="eyebrow">Today’s focus</p><h2 id="focus-title">Your morning, made lighter.</h2></div>
+            <div class="progress-wrap"><span id="progress-label">0 of 0 ready</span><div class="progress-track"><div class="progress-bar" id="progress-bar"></div></div></div>
+          </section>
+
+          <section class="assistant-card" aria-labelledby="assistant-title">
+            <div class="assistant-mark">✦</div>
+            <div class="assistant-copy"><p class="eyebrow">Your planning helper</p><h2 id="assistant-title">Ask the school helper</h2><p>Get prep advice, add a task, or set a reminder. Schedule access stays off until you allow it.</p></div>
+            <button class="outline-button" id="open-assistant" type="button">Ask helper</button>
+          </section>
+
+          <div class="section-heading"><div><p class="eyebrow">Your essentials</p><h2>What’s coming with you?</h2></div><button class="add-button" id="open-add">+ Add item</button></div>
           <div id="checklist-items" class="checklist-items"></div>
-          <div id="empty-state" class="empty-state hidden">...</div>
+          <div id="empty-state" class="empty-state hidden"><span>✎</span><h3>Nothing planned for this day</h3><p>Add an item and choose the days you need it.</p></div>
+
+          <section class="week-section"><div class="section-heading compact"><div><p class="eyebrow">Plan ahead</p><h2>Week at a glance</h2></div><span class="week-hint">Tap a day to view its list</span></div><div class="days" id="days"></div></section>
         </section>
 
         <section id="schedule" class="tab-panel">
-          <header class="page-header schedule-header">...</header>
+          <header class="page-header schedule-header"><div><p class="eyebrow">Your visual plan</p><h1>My schedule.</h1><p class="subhead">Keep your class times close, without the paper shuffle.</p></div><button class="add-button" id="upload-trigger">↑ Upload PDF</button></header>
           <div class="schedule-stage" id="schedule-stage">
-            <div class="schedule-placeholder" id="schedule-placeholder">...</div>
+            <div class="schedule-placeholder" id="schedule-placeholder"><div class="upload-icon">↑</div><h2>Drop in your schedule</h2><p>Upload a PDF to keep your timetable in its own tab.</p><button class="outline-button" id="upload-trigger-secondary">Choose PDF</button><input id="schedule-input" type="file" accept="application/pdf,.pdf" hidden /></div>
             <img id="schedule-image" class="schedule-image hidden" alt="Uploaded school schedule" />
           </div>
+          <div class="schedule-footer hidden" id="schedule-footer"><span>PDF schedule</span><div><button class="text-button" id="open-schedule">Open PDF window</button><button class="text-button" id="replace-schedule">Replace PDF</button></div></div>
         </section>
       </main>
     </div>
 
-    <dialog id="item-dialog">...</dialog>
-    <dialog id="account-dialog">...</dialog>
-    <dialog id="settings-dialog">...</dialog>
-    <dialog id="notifications-dialog">...</dialog>
-
+    <dialog id="item-dialog"><form method="dialog" id="item-form"><div class="dialog-header"><div><p class="eyebrow">Your essential</p><h2 id="item-dialog-title">Add to your list</h2></div><button class="close-button" type="button" id="item-close" aria-label="Close">×</button></div><label for="item-name">What do you need?</label><input id="item-name" name="item-name" type="text" placeholder="e.g. Water bottle" required maxlength="60" /><fieldset><legend>Task days</legend><div class="day-picker" id="day-picker"></div></fieldset><div class="reminder-row"><label><input id="reminder-enabled" type="checkbox" /> Send me a notification</label><input id="reminder-time" type="time" value="18:00" aria-label="Notification time" /></div><fieldset class="reminder-days"><legend>Notify me on</legend><div class="day-picker" id="reminder-day-picker"></div></fieldset><div class="dialog-actions"><button class="outline-button" id="item-cancel" type="button">Cancel</button><button class="add-button" id="item-submit" type="submit">Add item</button></div></form></dialog>
+    <dialog id="account-dialog"><form id="account-form"><div class="dialog-header"><div><p class="eyebrow">Your profile</p><h2 id="account-dialog-title">Log in to your account</h2></div><button class="close-button" type="button" onclick="this.closest('dialog').close()" aria-label="Close">×</button></div><label id="account-name-field" for="account-name-input">Username</label><input id="account-name-input" type="text" placeholder="e.g. Alex" maxlength="60" required /><label for="account-email">Email address</label><input id="account-email" type="email" placeholder="you@example.com" required /><label for="account-password">Password</label><div class="password-input-row"><input id="account-password" type="password" minlength="6" placeholder="At least 6 characters" required /><button id="toggle-account-password" class="password-toggle" type="button" aria-controls="account-password" aria-pressed="false">View password</button></div><label class="remember-me hidden" id="remember-me-label" for="remember-me"><input id="remember-me" type="checkbox" /> Remember me</label><p class="form-error" id="account-error" role="alert"></p><button class="account-switch" id="account-switch" type="button">New here? Create an account</button><div class="dialog-actions"><button class="outline-button" type="button" onclick="this.closest('dialog').close()">Cancel</button><button class="add-button" id="account-submit" type="submit">Log in</button></div></form></dialog>
+    <dialog id="settings-dialog"><form id="settings-form" class="settings-form"><div class="dialog-header"><div><p class="eyebrow">Your profile</p><h2>Profile settings</h2></div><button class="close-button" type="button" onclick="this.closest('dialog').close()" aria-label="Close">×</button></div><section class="settings-group"><h3>Personal details</h3><label for="settings-name">Name</label><input id="settings-name" type="text" maxlength="60" required /><label for="settings-email">Email address</label><input id="settings-email" type="email" required /><label for="profile-photo">Profile picture</label><input id="profile-photo" type="file" accept="image/*" /></section><section class="settings-group password-section"><h3>Security</h3><p class="settings-note">Change your password by confirming the current one.</p><label for="current-password">Current password</label><input id="current-password" type="password" minlength="6" /><label for="new-password">New password</label><input id="new-password" type="password" minlength="6" /></section><p class="form-error" id="settings-error" role="alert"></p><div class="dialog-actions"><button class="outline-button" type="button" onclick="this.closest('dialog').close()">Cancel</button><button class="add-button" type="submit">Save changes</button></div></form></dialog>
+    <dialog id="notifications-dialog"><section class="notification-panel"><div class="dialog-header"><div><p class="eyebrow">Your reminders</p><h2>Notifications</h2></div><button class="close-button" type="button" onclick="this.closest('dialog').close()" aria-label="Close">×</button></div><div id="notification-list" class="notification-list"></div><div class="dialog-actions"><button class="outline-button" id="clear-notifications" type="button">Clear all</button><button class="add-button" type="button" onclick="this.closest('dialog').close()">Done</button></div></section></dialog>
+    <dialog id="assistant-dialog"><form id="assistant-form"><div class="dialog-header"><div><p class="eyebrow">Private on-device helper</p><h2>Ask the school helper</h2></div><button class="close-button" type="button" onclick="this.closest('dialog').close()" aria-label="Close">×</button></div><label class="assistant-permission"><input id="assistant-permission" type="checkbox" /> Let the helper scan my uploaded schedule</label><p class="assistant-privacy">Your schedule is read in this browser only. You can turn access off any time.</p><div class="assistant-prompts"><button type="button" class="prompt-button" data-prompt="What should I prepare today?">Prepare today</button><button type="button" class="prompt-button" data-prompt="What am I forgetting?">Check my list</button><button type="button" class="prompt-button" data-prompt="Add task: Pack art supplies">Add a task</button></div><label for="assistant-input">What do you need?</label><input id="assistant-input" type="text" placeholder="e.g. Add task: Pack library book" maxlength="120" required /><div id="assistant-response" class="assistant-response" role="status"></div><div class="dialog-actions"><button class="outline-button" type="button" onclick="this.closest('dialog').close()">Done</button><button class="add-button" type="submit">Ask</button></div></form></dialog>
     <script type="module" src="app.js?v=20260826-single-session"></script>
   </body>
 </html>
