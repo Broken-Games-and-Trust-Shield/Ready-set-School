@@ -1,0 +1,43 @@
+import webpush from 'npm:web-push@3.6.7';
+
+const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+const vapidSubject = Deno.env.get('VAPID_SUBJECT')!;
+const vapidPublicKey = Deno.env.get('VAPID_PUBLIC_KEY')!;
+const vapidPrivateKey = Deno.env.get('VAPID_PRIVATE_KEY')!;
+
+webpush.setVapidDetails(vapidSubject, vapidPublicKey, vapidPrivateKey);
+
+async function supabaseRequest(path: string, options: RequestInit = {}) {
+  const response = await fetch(`${supabaseUrl}/rest/v1/${path}`, {
+    ...options,
+    headers: { apikey: serviceRoleKey, Authorization: `Bearer ${serviceRoleKey}`, 'Content-Type': 'application/json', ...(options.headers || {}) }
+  });
+  if (!response.ok) throw new Error(await response.text());
+  return response.text().then((text) => text ? JSON.parse(text) : null);
+}
+
+Deno.serve(async () => {
+  const now = new Date();
+  const profiles = await supabaseRequest('profiles?select=id,items');
+  let sent = 0;
+  for (const profile of profiles || []) {
+    const subscriptions = await supabaseRequest(`push_subscriptions?user_id=eq.${profile.id}&select=endpoint,subscription`);
+    for (const subscription of subscriptions || []) {
+      const timezone = subscription.subscription?.timezone || 'UTC';
+      const localParts = new Intl.DateTimeFormat('en-CA', { timeZone: timezone, year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'short', hour: '2-digit', minute: '2-digit', hour12: false, hourCycle: 'h23' }).formatToParts(now).reduce((parts, part) => ({ ...parts, [part.type]: part.value }), {} as Record<string, string>);
+      const day = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(localParts.weekday);
+      const date = `${localParts.year}-${localParts.month}-${localParts.day}`;
+      const currentTime = `${localParts.hour}:${localParts.minute}`;
+      for (const item of profile.items || []) {
+        if (!item.reminderTime || item.reminderTime > currentTime || !(item.reminderDays || []).includes(day) || (item.doneDays || []).includes(day)) continue;
+        const reminderTime = `${item.reminderTime}:00`;
+        const reminder = { user_id: profile.id, item_id: String(item.id), reminder_date: date, reminder_time: reminderTime };
+        const claim = await supabaseRequest('sent_reminders', { method: 'POST', headers: { Prefer: 'resolution=ignore-duplicates,return=representation' }, body: JSON.stringify(reminder) });
+        if (!claim?.length) continue;
+        try { await webpush.sendNotification(subscription.subscription, JSON.stringify({ title: 'Ready Set School', body: `Remember: ${item.name}`, tag: `${item.id}-${date}-${reminderTime}` })); sent += 1; } catch (error) { if ((error as { statusCode?: number }).statusCode === 404 || (error as { statusCode?: number }).statusCode === 410) await supabaseRequest(`push_subscriptions?endpoint=eq.${encodeURIComponent(subscription.endpoint)}`, { method: 'DELETE' }); }
+      }
+    }
+  }
+  return new Response(JSON.stringify({ sent }), { headers: { 'Content-Type': 'application/json' } });
+});
