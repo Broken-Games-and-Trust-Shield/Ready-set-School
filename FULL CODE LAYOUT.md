@@ -144,7 +144,7 @@ This stylesheet defines the app’s visual identity and responsive behavior.
 
 ## 4) App logic (`app.js`)
 
-This is the heart of the application. It contains state, rendering, authentication, reminders, schedule upload, and sync logic.
+This is the heart of the application. It contains state, rendering, authentication, reminders, schedule upload, the permission-gated local planning helper, and sync logic.
 
 ### Core app state
 
@@ -233,6 +233,10 @@ $('#item-form').addEventListener('submit', async (event) => {
   render();
 });
 ```
+
+### Planning helper
+
+The checklist includes a local helper dialog. The user must explicitly allow schedule access before the helper uses uploaded schedule text. It can suggest unfinished items, add tasks from prompts such as `Add task: Pack library book`, and create timed reminders such as `Add task: Pack library book at 6 pm`. Selectable PDF text is extracted in the browser; image-only PDFs are reported as unreadable rather than guessed.
 
 ### Auth and Supabase session flow
 
